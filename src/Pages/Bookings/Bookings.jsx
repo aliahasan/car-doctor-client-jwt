@@ -1,17 +1,22 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../Providers/AuthProvider";
 import BookingRow from "./BookingRow";
-import axios from "axios";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const Bookings = () => {
   const { user } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
-  const url = `http://localhost:5000/bookings?email=${user?.email}`;
+  const axiosSecure = useAxiosSecure();
+
+  // const url = `http://localhost:5000/bookings?email=${user?.email}`;
+
+  const url = `/bookings?email=${user?.email}`;
+
   useEffect(() => {
-    axios.get(url, { withCredentials: true }).then((res) => {
+    axiosSecure.get(url).then((res) => {
       setBookings(res.data);
     });
-  }, [url]);
+  }, [url, axiosSecure]);
 
   const handleDelete = (id) => {
     const proceed = confirm("Are you sure you want to delete ?");
@@ -77,7 +82,7 @@ const Bookings = () => {
             </tr>
           </thead>
           <tbody>
-            {bookings.map((booking) => (
+            {bookings?.map((booking) => (
               <BookingRow
                 key={booking._id}
                 booking={booking}
